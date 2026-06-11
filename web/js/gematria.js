@@ -66,6 +66,43 @@
         return n + s;
     }
 
+    function squareRootInt(n) {
+        const r = Math.floor(Math.sqrt(n));
+        return r * r === n ? r : 0;
+    }
+
+    function figurateIndex(n, type) {
+        n = parseInt(n, 10) || 0;
+        if (n < 1) return 0;
+        let root, index;
+        if (type === 'triangular') {
+            root = squareRootInt(8 * n + 1);
+            index = (root - 1) / 2;
+        } else if (type === 'hexagonal') {
+            root = squareRootInt(8 * n + 1);
+            index = (root + 1) / 4;
+        } else {
+            root = squareRootInt(6 * n + 3);
+            index = (root + 3) / 6;
+        }
+        return root && Number.isInteger(index) && index >= 1 ? index : 0;
+    }
+
+    function figurateInfo(n) {
+        return {
+            triangular: figurateIndex(n, 'triangular'),
+            hexagonal: figurateIndex(n, 'hexagonal'),
+            star: figurateIndex(n, 'star')
+        };
+    }
+
+    function figurateLine(n) {
+        const f = figurateInfo(n);
+        return 'Triangular: ' + (f.triangular ? '#' + f.triangular : 'Not Triangular') +
+            ', Hexagonal: ' + (f.hexagonal ? '#' + f.hexagonal : 'Not Hexagonal') +
+            ', Star: ' + (f.star ? '#' + f.star : 'Not Star');
+    }
+
     const typeLabels = { std: 'Standard', ord: 'Ordinal', red: 'Reduced' };
     const dataAttrs  = { std: 'gemStd',   ord: 'gemOrd',  red: 'gemRed'  };
 
@@ -182,7 +219,7 @@
             row.innerHTML =
                 `<span class="gem-row-type">${typeLabels[t]}</span>` +
                 `<span class="gem-row-value">${valStr}</span>` +
-                `<span class="gem-row-factors${isPrime ? ' is-prime' : ''}">Factors ${fStr} · Prime index ${idx}</span>`;
+                `<span class="gem-row-factors${isPrime ? ' is-prime' : ''}">Factors ${fStr} · Prime index ${idx} · ${figurateLine(val)}</span>`;
             rowsEl.appendChild(row);
         }
     }

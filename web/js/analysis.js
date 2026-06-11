@@ -124,9 +124,46 @@
         return count;
     }
 
+    function squareRootInt(n) {
+        const r = Math.floor(Math.sqrt(n));
+        return r * r === n ? r : 0;
+    }
+
+    function figurateIndex(n, type) {
+        n = parseInt(n, 10) || 0;
+        if (n < 1) return 0;
+        let root, index;
+        if (type === 'triangular') {
+            root = squareRootInt(8 * n + 1);
+            index = (root - 1) / 2;
+        } else if (type === 'hexagonal') {
+            root = squareRootInt(8 * n + 1);
+            index = (root + 1) / 4;
+        } else {
+            root = squareRootInt(6 * n + 3);
+            index = (root + 3) / 6;
+        }
+        return root && Number.isInteger(index) && index >= 1 ? index : 0;
+    }
+
+    function figurateInfo(n) {
+        return {
+            triangular: figurateIndex(n, 'triangular'),
+            hexagonal: figurateIndex(n, 'hexagonal'),
+            star: figurateIndex(n, 'star')
+        };
+    }
+
+    function figurateLine(n) {
+        const f = figurateInfo(n);
+        return 'Triangular: ' + (f.triangular ? '#' + f.triangular : 'Not Triangular') +
+            ', Hexagonal: ' + (f.hexagonal ? '#' + f.hexagonal : 'Not Hexagonal') +
+            ', Star: ' + (f.star ? '#' + f.star : 'Not Star');
+    }
+
     function valueNote(n) {
         const idx = primeIndex(n);
-        return 'Factors ' + formatFactorsPlain(n) + ' · Prime index ' + (idx || 'not prime');
+        return 'Factors ' + formatFactorsPlain(n) + ' · Prime index ' + (idx || 'not prime') + ' · ' + figurateLine(n);
     }
 
     function hebrewLetters(text) {
@@ -471,12 +508,18 @@
                 standard: section.totals.standard,
                 standard_factorization: formatFactorsPlain(section.totals.standard),
                 standard_prime_index: primeIndex(section.totals.standard),
+                standard_figurate_numbers: figurateLine(section.totals.standard),
+                standard_figurate_indexes: figurateInfo(section.totals.standard),
                 ordinal: section.totals.ordinal,
                 ordinal_factorization: formatFactorsPlain(section.totals.ordinal),
                 ordinal_prime_index: primeIndex(section.totals.ordinal),
+                ordinal_figurate_numbers: figurateLine(section.totals.ordinal),
+                ordinal_figurate_indexes: figurateInfo(section.totals.ordinal),
                 reduced: section.totals.reduced,
                 reduced_factorization: formatFactorsPlain(section.totals.reduced),
-                reduced_prime_index: primeIndex(section.totals.reduced)
+                reduced_prime_index: primeIndex(section.totals.reduced),
+                reduced_figurate_numbers: figurateLine(section.totals.reduced),
+                reduced_figurate_indexes: figurateInfo(section.totals.reduced)
             },
             original: section.original,
             meaning: section.meaning,
@@ -494,9 +537,9 @@
             '',
             'Words: ' + payload.counts.words,
             'Letters: ' + payload.counts.letters,
-            'Standard: ' + payload.values.standard + ' | factors: ' + payload.values.standard_factorization + ' | prime index: ' + (payload.values.standard_prime_index || 'not prime'),
-            'Ordinal: ' + payload.values.ordinal + ' | factors: ' + payload.values.ordinal_factorization + ' | prime index: ' + (payload.values.ordinal_prime_index || 'not prime'),
-            'Reduced: ' + payload.values.reduced + ' | factors: ' + payload.values.reduced_factorization + ' | prime index: ' + (payload.values.reduced_prime_index || 'not prime'),
+            'Standard: ' + payload.values.standard + ' | factors: ' + payload.values.standard_factorization + ' | prime index: ' + (payload.values.standard_prime_index || 'not prime') + ' | figurate: ' + payload.values.standard_figurate_numbers,
+            'Ordinal: ' + payload.values.ordinal + ' | factors: ' + payload.values.ordinal_factorization + ' | prime index: ' + (payload.values.ordinal_prime_index || 'not prime') + ' | figurate: ' + payload.values.ordinal_figurate_numbers,
+            'Reduced: ' + payload.values.reduced + ' | factors: ' + payload.values.reduced_factorization + ' | prime index: ' + (payload.values.reduced_prime_index || 'not prime') + ' | figurate: ' + payload.values.reduced_figurate_numbers,
             '',
             'Word audit:'
         ];

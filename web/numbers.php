@@ -60,6 +60,9 @@ bible_render_layout_header();
     <option value="primes">Primes</option>
     <option value="composites">Composites</option>
     <option value="semiprimes">Semiprimes</option>
+    <option value="triangular">Triangular Numbers</option>
+    <option value="hexagonal">Hexagonal Numbers</option>
+    <option value="star">Star Numbers</option>
   </select>
 
   <label for="seq-limit">Show</label>
@@ -104,6 +107,7 @@ bible_render_layout_header();
     }
 
     function factorHTML(n) {
+        if (n < 2) return '' + n;
         if (isPrime(n)) return '<span style="font-style:italic;color:var(--muted)">prime</span>';
         return factorize(n).map(function (pe) {
             return pe[1] > 1 ? pe[0] + '<sup>' + pe[1] + '</sup>' : '' + pe[0];
@@ -117,9 +121,24 @@ bible_render_layout_header();
         return total === 2;
     }
 
+    function figurateValue(type, index) {
+        if (type === 'triangular') return Math.floor(index * (index + 1) / 2);
+        if (type === 'hexagonal') return index * (2 * index - 1);
+        if (type === 'star') return 6 * index * (index - 1) + 1;
+        return 0;
+    }
+
     /* ---- Build sequence ---- */
     function buildSequence(type, limit) {
         var result = [];
+        if (type === 'triangular' || type === 'hexagonal' || type === 'star') {
+            for (var index = 1; result.length < limit; index++) {
+                var value = figurateValue(type, index);
+                if (value > LIMIT) break;
+                result.push(value);
+            }
+            return result;
+        }
         for (var n = 2; n <= LIMIT && result.length < limit; n++) {
             if      (type === 'primes'      && isPrime(n))     result.push(n);
             else if (type === 'composites'  && !isPrime(n))    result.push(n);
